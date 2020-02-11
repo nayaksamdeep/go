@@ -12,10 +12,7 @@ import  (
      "os"
      "log"
      "time"
-//     "strings"
      "github.com/asdine/storm"
-//     "github.com/asdine/storm/q"
-
 )
 
 
@@ -53,14 +50,25 @@ func main() {
         break;
     case 'V':
         var today []Entry
+        var total int
 
         err = db.Range("Day", time.Now().AddDate(0, 0, -1), time.Now().AddDate(0, 0, 1), &today)
         if err != nil {
                 log.Fatal(err)
         }
+
         fmt.Println(today)
 
+        /*
+         * TODO - Figure out the total number of records using Storm
+         */
+        total = today[1].Cups + today[0].Cups
+
+        fmt.Println(total)
+
         break;
+    default:
+        fmt.Print("Pls type in valid input\n");
     }
     
 }
