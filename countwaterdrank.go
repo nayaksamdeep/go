@@ -58,8 +58,6 @@ func main() {
         if err != nil {
                 log.Fatal(err)
         }
-        fmt.Println("Total Glasses of Water - %d", today.Cups)
-
         fmt.Println(today)
 
         break;
