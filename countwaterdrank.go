@@ -31,7 +31,7 @@ func main() {
     defer db.Close()
 
     fmt.Println("hi there! Welcome to Hydrometer where you can track the Number of Water Cups you drank\n");
-    fmt.Println("Pls press 'A' if you want to update the # of glasses or 'V' to view your consumption\n");
+    fmt.Println("Pls press 'A' if you want to update the # of glasses or 'V' to view your consumption or 'C' to view # of records in the db\n");
 
     reader := bufio.NewReader(os.Stdin);
     char, _, err := reader.ReadRune();
@@ -50,7 +50,7 @@ func main() {
         break;
     case 'V':
         var today []Entry
-        var total int
+        //var total int
 
         err = db.Range("Day", time.Now().AddDate(0, 0, -1), time.Now().AddDate(0, 0, 1), &today)
         if err != nil {
@@ -62,16 +62,35 @@ func main() {
         /*
          * TODO - Figure out the total number of records using Storm
          */
-        total = today[1].Cups + today[0].Cups
+	count := len(today);
+	fmt.Println("# of records as of today: ",  count);
+	var totalcups int = 0;
+	for index := range today  {
+            totalcups += today[index].Cups;
+	}
+        //total = today[1].Cups + today[0].Cups
 
-        fmt.Println(total)
+	fmt.Println("Total cups consumed today: ", totalcups);
 
         break;
+    case  'C':
+         countRecords(db);
     default:
         fmt.Print("Pls type in valid input\n");
     }
     
 }
+
+func countRecords(db *storm.DB) error { 
+    var entry Entry = Entry{};
+    nrecords, err := db.Count(&entry);
+    if (err != nil) {
+	    fmt.Println("cannot fetch count from db: ", err);
+    }
+    fmt.Println("#records: ", nrecords);
+    return nil;
+}
+
 
 func addEntry(db *storm.DB) error {
     /*
@@ -81,14 +100,14 @@ func addEntry(db *storm.DB) error {
 
     var day, cups int
 
-    fmt.Scanf("%d", &day)
+    fmt.Scanf("%d\n", &day)
 
     /*
      * Enter the number of cups
      */
      fmt.Println("Enter the number of cups you drank\n"); 
 
-    fmt.Scanf("%d", &cups)
+    fmt.Scanf("%d\n", &cups)
 
 
     /*
